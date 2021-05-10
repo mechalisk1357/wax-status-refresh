@@ -1,0 +1,51 @@
+<html>
+
+<head>
+    <script src="js/index.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/index.css">
+    <meta name="color-scheme" content="dark">
+</head>
+
+<body>
+    <div class="container">
+        <label for="fname">Account Address:</label>
+        <br>
+        <input type="text" id="address" name="a">
+        <button id="addressSubmit" onClick="submitAccountAddress();">
+            Submit
+        </button>
+        <button id="stopPolling" onClick="stopPolling();">
+            Stop Polling
+        </button>
+
+        <div id="data" class="hidden">
+            <h3>CPU Usage</h3>
+            <div id="cpu"></div>
+            <div id="container">
+                <div id="myProgress">
+                    <div id="myBar"></div>
+                </div>
+            </div>
+            <br />
+            <h3>Tokens</h3>
+            <table id="tokens">
+                <tr>
+                    <th>Symbol</th>
+                    <th>Amount</th>
+                    <th>Wax Ratio</th>
+                    <th>Total Wax</th>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <br />
+        <div>
+            Send a TIP to <strong>.hlro.wam</strong> :D
+        </div>
+    </div>
+
+
+</body>
+
+</html>

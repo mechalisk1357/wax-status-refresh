@@ -1,0 +1,46 @@
+body {
+  background-color: black;
+}
+
+.container {
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 5%;
+}
+
+.hidden {
+  display: none;
+}
+
+#tokens p {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+#myProgress {
+  width: 100%;
+  background-color: lightgrey;
+}
+
+#myBar {
+  width: 1%;
+  height: 30px;
+  background-color: green;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+  width: 25%;
+}
+
+tr:nth-child(even) {
+  background-color: #282828;
+}
