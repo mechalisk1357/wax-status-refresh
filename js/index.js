@@ -14,7 +14,7 @@ const getCPU = (accountData) => {
     var available = (data.cpu_limit.used / data.cpu_limit.max) * 100
     stakedCPU = parseFloat(data.self_delegated_bandwidth.cpu_weight.split(" ")[0])
     let cpuPercent = round(available, 2)
-    $("div#cpu").text(cpuPercent + "%")
+    $("div#cpu").text(`${cpuPercent}% (${data.cpu_limit.used} / ${data.cpu_limit.max})`)
 
     if (cpuPercent >= 100) {
       $("div#myBar").css("background-color", "red")
