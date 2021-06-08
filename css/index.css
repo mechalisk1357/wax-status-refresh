@@ -17,12 +17,12 @@ body {
   margin-bottom: 0px;
 }
 
-#myProgress {
+.myProgress {
   width: 100%;
   background-color: lightgrey;
 }
 
-#myBar {
+#cpuBar, #ramBar {
   width: 1%;
   height: 30px;
   background-color: green;

@@ -1,32 +1,39 @@
 var stakedCPU = 0
 
 const round = (num, places) => {
+  if (typeof places === "string") {
+    return Math.round(num * Math.pow(10, parseInt(places))) / Math.pow(10, parseInt(places))
+  }
   return Math.round(num * Math.pow(10, places)) / Math.pow(10, places)
 }
 
-const getCPU = (accountData) => {
+const setProgress = (id, current, max) => {
+  var available = (current / max) * 100
+  var percent = round(available, 2)
+  $(`div#${id}`).text(`${percent}% (${current} / ${max})`)
+  if (percent >= 100) {
+    $(`div#${id}Bar`).css("background-color", "red")
+  } else {
+    $(`div#${id}Bar`).css("background-color", "green")
+  }
+  $(`div#${id}Bar`).css("width", `${percent >= 100 ? 100 : percent}%`)
+}
+
+const getCPUandRAM = (accountData) => {
   fetch("https://wax.greymass.com/v1/chain/get_account", {
     method: "POST",
     body: JSON.stringify(accountData)
   }).then(res => {
     return res.json()
   }).then(data => {
-    var available = (data.cpu_limit.used / data.cpu_limit.max) * 100
     stakedCPU = parseFloat(data.self_delegated_bandwidth.cpu_weight.split(" ")[0])
-    let cpuPercent = round(available, 2)
-    $("div#cpu").text(`${cpuPercent}% (${data.cpu_limit.used} / ${data.cpu_limit.max})`)
-
-    if (cpuPercent >= 100) {
-      $("div#myBar").css("background-color", "red")
-    } else {
-      $("div#myBar").css("background-color", "green")
-    }
-    $("div#myBar").css("width", `${cpuPercent >= 100 ? 100 : cpuPercent}%`)
+    setProgress("cpu", data.cpu_limit.used, data.cpu_limit.max)
+    setProgress("ram", data.ram_usage, data.ram_quota)
   })
 }
 
 const getTokens = (accountData) => {
-  fetch(`https://eosauthority.com/api/spa/account/${accountData.account_name}/tokens?network=wax`, {
+  fetch(`https://lightapi.eosamsterdam.net/api/balances/wax/${accountData.account_name}`, {
     method: "GET"
   }).then(res => {
     return res.json()
@@ -61,24 +68,26 @@ const getTokens = (accountData) => {
             <th>Total Wax</th>
           </tr>
    			`)
-      tokenData.forEach((token) => {
+      tokenData.balances.forEach((token) => {
         console.log(token)
-        let convData = data.rows.find(row => row.pool2.quantity.includes(token.symbol) || row.pool1.quantity.includes(token.symbol))
+        let convData = data.rows.find(row => row.pool2.quantity.includes(token.currency) || row.pool1.quantity.includes(token.currency))
         console.log(convData)
         let waxPool = convData.pool1.quantity.includes("WAX") ? convData.pool1 : convData.pool2
-        let tokenPool = convData.pool1.quantity.includes(token.symbol) ? convData.pool1 : convData.pool2
+        let tokenPool = convData.pool1.quantity.includes(token.currency) ? convData.pool1 : convData.pool2
         let waxQuantity = parseFloat(waxPool.quantity.split(" ")[0])
         let tokenQuantity = parseFloat(tokenPool.quantity.split(" ")[0])
+        console.log(waxQuantity, tokenQuantity)
         let tokenToWax = waxQuantity / tokenQuantity
+        console.log(tokenToWax)
 
 
-        if (token.symbol === "WAX") {
+        if (token.currency === "WAX") {
           totalWax += stakedCPU
-          $("table#tokens").append(`<tr><td>${token.symbol}</td><td>${token.amount}</td><td>1</td><td>${token.amount}</td></tr>`)
+          $("table#tokens").append(`<tr><td>${token.currency}</td><td>${token.amount}</td><td>1</td><td>${token.amount}</td></tr>`)
         } else {
           let estWax = round(token.amount * tokenToWax, 3)
           totalWax += estWax
-          $("table#tokens").append(`<tr><td>${token.symbol}</td><td>${token.amount}</td><td>${round(tokenToWax, 3)}</td><td>${round(estWax, 3)}</td></tr>`)
+          $("table#tokens").append(`<tr><td>${token.currency}</td><td>${token.amount}</td><td>${round(tokenToWax, token.decimals)}</td><td>${round(estWax, 3)}</td></tr>`)
         }
       })
       $("table#tokens").append(`<tr><td>Staked</td><td></td><td>1</td><td>${stakedCPU}</td></tr>`)
@@ -105,11 +114,11 @@ const submitAccountAddress = () => {
     account_name: $("#address").val()
   }
   $("div#test").text($("#address").val())
-  getCPU(data)
+  getCPUandRAM(data)
   getTokens(data)
 
   intervalId = setInterval(() => {
-    getCPU(data)
+    getCPUandRAM(data)
     getTokens(data)
   }, 10000)
 }
